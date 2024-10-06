@@ -30,7 +30,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-//#define CPP
+#define CPP
 
 #ifndef INC_FREERTOS_H
     #error "include FreeRTOS.h" must appear in source files before "include queue.h"
@@ -148,7 +148,7 @@ typedef struct QueueDefinition   * QueueSetMemberHandle_t;
  * \ingroup QueueManagement
  */
 #if ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
-    #define xQueueCreate( uxQueueLength, uxItemSize )    xQueueGenericCreate( ( uxQueueLength ), ( uxItemSize ), ( queueQUEUE_TYPE_BASE ) )
+    #define xQueueCreate( uxQueueLength, uxItemSize )    xQueueGenericCreate( ( uxQueueLength ), ( uxItemSize ), ( queueQUEUE_TYPE_BASE ), 0 )
 #endif
 
 /**
@@ -1455,7 +1455,7 @@ BaseType_t xQueueCRReceive( QueueHandle_t xQueue,
  * xSemaphoreCreateCounting() or xSemaphoreGetMutexHolder() instead of calling
  * these functions directly.
  */
-QueueHandle_t xQueueCreateMutex( const uint8_t ucQueueType ) PRIVILEGED_FUNCTION;
+QueueHandle_t xQueueCreateMutex( const uint8_t ucQueueType, const UBaseType_t uxMutexPriority ) PRIVILEGED_FUNCTION;
 QueueHandle_t xQueueCreateMutexStatic( const uint8_t ucQueueType,
                                        StaticQueue_t * pxStaticQueue ) PRIVILEGED_FUNCTION;
 QueueHandle_t xQueueCreateCountingSemaphore( const UBaseType_t uxMaxCount,
@@ -1550,7 +1550,8 @@ BaseType_t xQueueGiveMutexRecursive( QueueHandle_t xMutex ) PRIVILEGED_FUNCTION;
 #if ( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
     QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength,
                                        const UBaseType_t uxItemSize,
-                                       const uint8_t ucQueueType ) PRIVILEGED_FUNCTION;
+                                       const uint8_t ucQueueType,
+									   const UBaseType_t uxQueuePriority ) PRIVILEGED_FUNCTION;
 #endif
 
 /*

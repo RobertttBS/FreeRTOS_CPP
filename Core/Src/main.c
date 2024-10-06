@@ -25,6 +25,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
+#include "queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -113,8 +114,8 @@ int main(void) {
 	// Start SEGGER
 	SEGGER_SYSVIEW_Conf();
 
-	xSemaphore1 = xSemaphoreCreateMutex();
-	xSemaphore2 = xSemaphoreCreateMutex();
+	xSemaphore1 = xSemaphoreCreateMutex(4);
+	xSemaphore2 = xSemaphoreCreateMutex(4);
 
 	status = xTaskCreate(task1_handler, "task-1", 200, "task1: Turn on the led",
 			3, &task1_handle);

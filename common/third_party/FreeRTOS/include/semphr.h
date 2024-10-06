@@ -732,7 +732,7 @@ typedef QueueHandle_t SemaphoreHandle_t;
  * \ingroup Semaphores
  */
 #if ( ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) && ( configUSE_MUTEXES == 1 ) )
-    #define xSemaphoreCreateMutex()    xQueueCreateMutex( queueQUEUE_TYPE_MUTEX )
+    #define xSemaphoreCreateMutex( uxSemphrPriority )    xQueueCreateMutex( queueQUEUE_TYPE_MUTEX, uxSemphrPriority )
 #endif
 
 /**
