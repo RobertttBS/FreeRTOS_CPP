@@ -126,6 +126,10 @@ typedef struct QueueDefinition /* The old naming convention is used to prevent b
         struct QueueDefinition * pxQueueSetContainer;
     #endif
 
+	#ifdef CPP
+        UBaseType_t uxQueuePriority;
+	#endif
+
     #if ( configUSE_TRACE_FACILITY == 1 )
         UBaseType_t uxQueueNumber;
         uint8_t ucQueueType;

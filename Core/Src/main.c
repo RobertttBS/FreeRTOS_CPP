@@ -235,35 +235,83 @@ static void MX_GPIO_Init(void) {
 static void task1_handler(void *param) {
 
 	while (1) {
+		vTaskDelay(pdMS_TO_TICKS(5000));
+		// Delay 1000 ms
+		SEGGER_SYSVIEW_PrintfTarget("Task1 delay 5000 ms\n");
+		vTaskDelay(pdMS_TO_TICKS(5000));
 
-		if ( xSemaphoreTake( xSemaphore1, ( TickType_t ) 10 ) == pdTRUE) {
-			/* We were able to obtain the semaphore and can now access the
-			 shared resource. */
+		SEGGER_SYSVIEW_PrintfTarget("Task1 compute 2000 ms\n");
+		HAL_Delay(2000);
 
-			/* ... */
-			SEGGER_SYSVIEW_PrintfTarget("Take semaphore 1\n");
+		SEGGER_SYSVIEW_PrintfTarget("Task1 take semaphore 2\n");
+		if ( xSemaphoreTake(xSemaphore2,
+				( TickType_t ) pdMS_TO_TICKS(10000)) == pdTRUE) {
+			SEGGER_SYSVIEW_PrintfTarget("Task1 compute 3000 ms: R2\n");
+			HAL_Delay(3000);
 
-			vTaskDelay(1000);
+			//Take xSemaphore1
+			SEGGER_SYSVIEW_PrintfTarget("Task1 take semaphore 1\n");
+			if ( xSemaphoreTake(xSemaphore1,
+					(TickType_t) pdMS_TO_TICKS(10000)) == pdTRUE) {
+				SEGGER_SYSVIEW_PrintfTarget("Task1 compute 3000 ms: R1, R2\n");
+				HAL_Delay(3000);
 
-			/* We have finished accessing the shared resource. Release the
-			 semaphore. */
-			xSemaphoreGive(xSemaphore1);
+				SEGGER_SYSVIEW_PrintfTarget("Task1 give semaphore1\n");
+				xSemaphoreGive(xSemaphore1);
+			} else {
+				SEGGER_SYSVIEW_PrintfTarget("Task1 fail taking semaphore 1\n");
+			}
+
+			SEGGER_SYSVIEW_PrintfTarget("Task1 compute 3000 ms: R2\n");
+			HAL_Delay(3000);
+
+			xSemaphoreGive(xSemaphore2);
+			SEGGER_SYSVIEW_PrintfTarget("Task1 give semaphore 2\n");
 		} else {
-			/* We could not obtain the semaphore and can therefore not access
-			 the shared resource safely. */
-			SEGGER_SYSVIEW_PrintfTarget("Fail taking semaphore 1\n");
+			SEGGER_SYSVIEW_PrintfTarget("Task1 fail taking semaphore 2\n");
 		}
-		taskYIELD();
+
+		SEGGER_SYSVIEW_PrintfTarget("Task1 delay 10000 ms\n");
+		vTaskDelay(pdMS_TO_TICKS(10000));
 	}
 }
 
 static void task2_handler(void *param) {
-	BaseType_t status;
 
 	while (1) {
-		SEGGER_SYSVIEW_PrintfTarget("Task 2\n");
-		vTaskDelay(1000);
-		taskYIELD();
+		vTaskDelay(pdMS_TO_TICKS(5000));
+		SEGGER_SYSVIEW_PrintfTarget("Task2 compute 2000 ms\n");
+		HAL_Delay(2000);
+
+		SEGGER_SYSVIEW_PrintfTarget("Task2 take semaphore 1\n");
+		if ( xSemaphoreTake(xSemaphore1,
+				( TickType_t ) pdMS_TO_TICKS(10000)) == pdTRUE) {
+			SEGGER_SYSVIEW_PrintfTarget("Task2 compute 6000 ms: R1\n");
+			HAL_Delay(6000);
+
+			// task2 take semaphore2
+			SEGGER_SYSVIEW_PrintfTarget("Task2 take semaphore2\n");
+			if ( xSemaphoreTake(xSemaphore2,
+					( TickType_t ) pdMS_TO_TICKS(10000)) == pdTRUE) {
+				SEGGER_SYSVIEW_PrintfTarget("Task2 compute 2000 ms: R1, R2\n");
+				HAL_Delay(2000);
+
+				SEGGER_SYSVIEW_PrintfTarget("Task2 give semaphore 2\n");
+				xSemaphoreGive(xSemaphore2);
+			} else {
+				SEGGER_SYSVIEW_PrintfTarget("Task2 fail taking semaphore 2\n");
+			}
+			SEGGER_SYSVIEW_PrintfTarget("Task2 compute 2000 ms: R1\n");
+			HAL_Delay(2000);
+
+			SEGGER_SYSVIEW_PrintfTarget("Task2 give semaphore 1\n");
+			xSemaphoreGive(xSemaphore1);
+		} else {
+			SEGGER_SYSVIEW_PrintfTarget("Task2 fail taking semaphore 1\n");
+		}
+
+		SEGGER_SYSVIEW_PrintfTarget("Task2 delay 1000 ms\n");
+		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 
